@@ -7,12 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myfirstapp.R
 import com.example.myfirstapp.model.TodoModel
-import com.example.myfirstapp.network.TodoServices
-import com.example.myfirstapp.network.TodosRepository
-import com.example.myfirstapp.viewmodels.TodoViewModel
-import com.google.gson.GsonBuilder
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.myfirstapp.utils.DataLayerSingleton
+import com.example.myfirstapp.views.todo_recycler_view.TodoListAdapter
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -23,26 +19,20 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
     private lateinit var todoListRecyclerView: RecyclerView
 
     // Data
-    lateinit var retrofitClient: Retrofit
-    lateinit var todoService: TodoServices
-
-    lateinit var todoViewModel: TodoViewModel
-
+    private val dataLayer = DataLayerSingleton
 
     companion object {
-        val TODO_MODEL_EXTRA = "TODO_MODEL_EXTRA"
+        const val TODO_MODEL_EXTRA = "TODO_MODEL_EXTRA"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
-        this.createRetrofitClient()
-        this.createTodoService()
-        this.initViewModel()
-
-        this.observeTodoListData()
-        this.fetchTodoList()
+        if (!this.dataLayer.getTodoViewModel().todoListLoadedOnce) {
+            this.observeTodoListData()
+            this.fetchTodoList()
+        }
     }
 
     private fun setUpActivityViews(data: List<TodoModel>) {
@@ -59,44 +49,20 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
         this.todoListRecyclerView.setAdapter(todoAdapter)
     }
 
-    // Setup HTTP client + services
-    private fun createRetrofitClient() {
-        val gsonConverter =
-            GsonConverterFactory.create(
-                GsonBuilder().create()
-            )
-        this.retrofitClient = Retrofit.Builder()
-            .baseUrl("https://my-json-server.typicode.com")
-            .addConverterFactory(gsonConverter)
-            .build()
-    }
-
-    private fun createTodoService() {
-        this.todoService = this.retrofitClient.create(TodoServices::class.java)
-    }
-
-    private fun initViewModel() {
-        this.todoViewModel = TodoViewModel(
-            TodosRepository(this.todoService),
-            this
-        )
-    }
-
 
     // Data fetch and observing
     private fun fetchTodoList() {
         // viewModel.getTodo()
-        this.todoViewModel.fetchTodoFromRepo()
+        this.dataLayer.getTodoViewModel().fetchTodoFromRepo()
+        this.dataLayer.getTodoViewModel().todoListLoadedOnce = true
     }
 
 
     private fun observeTodoListData() {
-        this.todoViewModel.todos.observe(this) { todoList ->
+        this.dataLayer.getTodoViewModel().todos.observe(this) { todoList ->
             this.setUpActivityViews(todoList)
         }
     }
-
-
 
     override fun displayTodoDetail(todo: TodoModel) {
         Intent(this, TodoDetailActivity::class.java).also {
@@ -111,40 +77,4 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
 
 interface TodoOnClickLListener {
     fun displayTodoDetail(todo: TodoModel)
-}
-
-fun verifyPassword(motDePasse: String): List<String> {
-    val erreurs = mutableListOf<String>()
-
-    // Vérifier la longueur minimale
-    if (motDePasse.length < 6) {
-        erreurs.add("Le mot de passe doit contenir au moins 6 caractères.")
-    }
-
-    // Vérifier au moins une lettre majuscule
-    if (!Regex("[A-Z]").containsMatchIn(motDePasse)) {
-        erreurs.add("Le mot de passe doit contenir au moins une lettre majuscule.")
-    }
-
-    // Vérifier au moins une lettre minuscule
-    if (!Regex("[a-z]").containsMatchIn(motDePasse)) {
-        erreurs.add("Le mot de passe doit contenir au moins une lettre minuscule.")
-    }
-
-    // Vérifier au moins un chiffre
-    if (!Regex("\\d").containsMatchIn(motDePasse)) {
-        erreurs.add("Le mot de passe doit contenir au moins un chiffre.")
-    }
-
-    // Vérifier au moins un caractère spécial
-    val caracteresSpeciaux = "~`!@#\$%\\^&*\\(\\)-_+=<>?/\\[]\\{}|"
-
-    val pattern: Pattern = Pattern.compile(caracteresSpeciaux)
-    val matcher: Matcher = pattern.matcher(motDePasse)
-    val passwordMatchesqPattern = matcher.matches()
-    if (passwordMatchesqPattern) {
-        erreurs.add("Le mot de passe doit contenir au moins un caractère spécial parmi $caracteresSpeciaux.")
-    }
-
-    return erreurs
 }
