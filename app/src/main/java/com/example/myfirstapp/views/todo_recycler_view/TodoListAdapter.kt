@@ -8,7 +8,7 @@ import com.example.myfirstapp.model.TodoModel
 import com.example.myfirstapp.views.TodoOnClickLListener
 
 class TodoListAdapter(
-    private val todoList: List<TodoModel>,
+    var todoList: List<TodoModel>,
     private val todoClickHandler: TodoOnClickLListener
 ): RecyclerView.Adapter<TodoViewHolder>(){
 

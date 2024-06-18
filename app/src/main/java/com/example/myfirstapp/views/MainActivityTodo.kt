@@ -1,14 +1,17 @@
 package com.example.myfirstapp.views
 
 import android.content.Intent
+import android.graphics.ColorSpace.Model
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myfirstapp.R
 import com.example.myfirstapp.model.TodoModel
 import com.example.myfirstapp.utils.DataLayerSingleton
 import com.example.myfirstapp.views.todo_recycler_view.TodoListAdapter
+import okhttp3.internal.notifyAll
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -20,7 +23,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
 
     // Data
     private val dataLayer = DataLayerSingleton
-
+    private lateinit var todoAdapter: TodoListAdapter
     companion object {
         const val TODO_MODEL_EXTRA = "TODO_MODEL_EXTRA"
     }
@@ -32,6 +35,9 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
         if (!this.dataLayer.getTodoViewModel().todoListLoadedOnce) {
             this.observeTodoListData()
             this.fetchTodoList()
+        } else {
+            val todoModels = this.dataLayer.getTodoViewModel().todos.value?.toList()
+            this.setUpActivityViews(todoModels ?: listOf())
         }
     }
 
@@ -39,7 +45,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
         this.todoListRecyclerView = findViewById(R.id.todo_list_recycler_view)
 
         // Setup RV Adapter
-        val todoAdapter = TodoListAdapter(data, this)
+        todoAdapter = TodoListAdapter(data, this)
 
         // Setup Linear layout manager
         val linearLayoutManager = LinearLayoutManager(this)
@@ -71,8 +77,6 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
             startActivity(it)
         }
     }
-
-    // A function that starts new activity with the selected todomodel
 }
 
 interface TodoOnClickLListener {
