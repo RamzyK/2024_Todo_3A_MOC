@@ -13,14 +13,14 @@ data class TodoModel(val title: String?, val description: String?, val date: Str
     }
 
     override fun describeContents(): Int {
-        return hashCode()
+        return 0
     }
 
     override fun writeToParcel(parcel: Parcel, p1: Int) {
         parcel.writeString(title)
         parcel.writeString(description)
         parcel.writeString(date)
-        parcel.writeValue(isChecked)
+        parcel.writeByte(if (isChecked) 1 else 0)
     }
 
     companion object CREATOR : Parcelable.Creator<TodoModel> {
@@ -29,7 +29,7 @@ data class TodoModel(val title: String?, val description: String?, val date: Str
         }
 
         override fun newArray(size: Int): Array<TodoModel?> {
-            return arrayOfNulls(size)
+            return arrayOf()
         }
     }
 }
