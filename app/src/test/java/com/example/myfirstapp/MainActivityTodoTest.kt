@@ -1,6 +1,6 @@
 package com.example.myfirstapp
 
-import com.example.myfirstapp.views.verifyPassword
+import com.example.myfirstapp.utils.verifyPassword
 import org.junit.Test
 import org.junit.Assert.*
 
