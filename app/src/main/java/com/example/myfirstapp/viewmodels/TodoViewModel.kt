@@ -11,15 +11,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class TodoViewModel(private val todoRepository: TodosRepository, val context: Context) {
+class TodoViewModel(private val todoRepository: TodosRepository) {
     var todos: MutableLiveData<ArrayList<TodoModel>> = MutableLiveData()
 
+    var todoListLoadedOnce = false
     fun fetchTodoFromRepo() {
         val todosApiResponse = this.todoRepository.fetchTodos()
 
         todosApiResponse.enqueue(object : Callback<List<TodoDto>> {
             override fun onFailure(p0: Call<List<TodoDto>>, t: Throwable) {
-                Toast.makeText(context, t.message, Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(p0: Call<List<TodoDto>>, response: Response<List<TodoDto>>) {
