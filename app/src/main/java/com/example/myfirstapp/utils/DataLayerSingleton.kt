@@ -28,7 +28,7 @@ object DataLayerSingleton {
                 GsonBuilder().create()
             )
         this.retrofitClient = Retrofit.Builder()
-            .baseUrl("https://my-json-server.typicode.com")
+            .baseUrl("https://my-json-server.typicode.com/")
             .addConverterFactory(gsonConverter)
             .build()
     }

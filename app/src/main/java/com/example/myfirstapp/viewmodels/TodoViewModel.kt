@@ -1,6 +1,7 @@
 package com.example.myfirstapp.viewmodels
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,6 +21,7 @@ class TodoViewModel(private val todoRepository: TodosRepository) {
 
         todosApiResponse.enqueue(object : Callback<List<TodoDto>> {
             override fun onFailure(p0: Call<List<TodoDto>>, t: Throwable) {
+                Log.d("Error", t.message ?: "Error")
             }
 
             override fun onResponse(p0: Call<List<TodoDto>>, response: Response<List<TodoDto>>) {

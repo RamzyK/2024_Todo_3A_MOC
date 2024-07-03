@@ -3,6 +3,7 @@ package com.example.myfirstapp.views
 import android.content.Intent
 import android.graphics.ColorSpace.Model
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +17,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
+class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateHandler {
 
     // Views
     private lateinit var todoListRecyclerView: RecyclerView
@@ -24,6 +25,8 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
     // Data
     private val dataLayer = DataLayerSingleton
     private lateinit var todoAdapter: TodoListAdapter
+
+    private lateinit var calendarFragmentView: CalendarFragmentView
     companion object {
         const val TODO_MODEL_EXTRA = "TODO_MODEL_EXTRA"
     }
@@ -31,6 +34,10 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+
+        // Init calendar fragment
+        this.calendarFragmentView = supportFragmentManager.findFragmentByTag("CALENDAR_VIEW") as CalendarFragmentView
+        this.calendarFragmentView.setUpCalendarHandler(this)
 
         if (!this.dataLayer.getTodoViewModel().todoListLoadedOnce) {
             this.observeTodoListData()
@@ -40,6 +47,17 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
             this.setUpActivityViews(todoModels ?: listOf())
         }
     }
+
+
+    // Calendar
+    override fun getSelectedDate(day: Int, month: Int, year: Int) {
+        val formattedDate = "$year-$month-$day"
+        Log.d("Selected date", formattedDate)
+    }
+
+
+
+
 
     private fun setUpActivityViews(data: List<TodoModel>) {
         this.todoListRecyclerView = findViewById(R.id.todo_list_recycler_view)
@@ -81,4 +99,8 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener {
 
 interface TodoOnClickLListener {
     fun displayTodoDetail(todo: TodoModel)
+}
+
+interface CalendarDateHandler {
+    fun getSelectedDate(day: Int, month: Int, year: Int)
 }

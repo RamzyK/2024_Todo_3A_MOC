@@ -7,6 +7,6 @@ import retrofit2.http.GET
 
 interface TodoServices {
 
-    @GET("/RamzyK/demo/todos")
+    @GET("RamzyK/demo/todos")
     fun getTodos(): Call<List<TodoDto>>
 }

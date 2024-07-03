@@ -6,11 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/calendar_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:tag="CALENDAR_VIEW"
+        android:name="com.example.myfirstapp.views.CalendarFragmentView" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendar_fragment_container"
+        android:layout_margin="5dp"
+        android:layout_height="1dp"/>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/todo_list_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         tools:itemCount="10"
+        app:layout_constraintTop_toBottomOf="@+id/separator"
         tools:listitem="@layout/todo_cell_layout"/>
 
     <androidx.cardview.widget.CardView
