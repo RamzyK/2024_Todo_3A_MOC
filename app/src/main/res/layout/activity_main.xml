@@ -28,6 +28,7 @@
         android:layout_height="0dp"
         tools:itemCount="10"
         app:layout_constraintTop_toBottomOf="@+id/separator"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/todo_cell_layout"/>
 
     <androidx.cardview.widget.CardView

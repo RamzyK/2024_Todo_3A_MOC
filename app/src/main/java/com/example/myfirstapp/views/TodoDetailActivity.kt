@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfirstapp.R
 import com.example.myfirstapp.model.TodoModel
+import com.example.myfirstapp.utils.DataLayerSingleton
 import com.example.myfirstapp.views.MainActivityTodo.Companion.TODO_MODEL_EXTRA
 
 class TodoDetailActivity : AppCompatActivity() {

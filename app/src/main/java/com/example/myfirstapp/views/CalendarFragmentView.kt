@@ -36,13 +36,14 @@ class CalendarFragmentView : Fragment() {
         this.observeCalendarDateChanges()
     }
 
-    private fun setUpCalendarView(){
+    fun setUpCalendarView(){
         this.calendar.setDate(System.currentTimeMillis(), false, true)
     }
 
     fun setUpCalendarHandler(handler: CalendarDateHandler) {
         this.calendarHandler = handler
     }
+
 
     private fun observeCalendarDateChanges() {
         this.calendar.setOnDateChangeListener { calendar: CalendarView, year: Int, month: Int, day: Int ->
@@ -52,7 +53,7 @@ class CalendarFragmentView : Fragment() {
             this.calendar.setDate(calendar.timeInMillis, false, true)
 
             // Notify activity
-            this.calendarHandler.getSelectedDate(year, month + 1, day)
+            this.calendarHandler.getSelectedDate(day, month + 1, year)
         }
     }
 

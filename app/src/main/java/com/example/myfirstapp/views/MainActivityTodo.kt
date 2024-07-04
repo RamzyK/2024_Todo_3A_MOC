@@ -4,6 +4,8 @@ import android.content.Intent
 import android.graphics.ColorSpace.Model
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +37,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
         setContentView(R.layout.activity_main)
 
+        this.title = "Todos"
         // Init calendar fragment
         this.calendarFragmentView = supportFragmentManager.findFragmentByTag("CALENDAR_VIEW") as CalendarFragmentView
         this.calendarFragmentView.setUpCalendarHandler(this)
@@ -53,10 +56,26 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
     override fun getSelectedDate(day: Int, month: Int, year: Int) {
         val formattedDate = "$year-$month-$day"
         Log.d("Selected date", formattedDate)
+        val todosFilteredByDate = dataLayer.getTodoViewModel().todos.value?.filter { it.date == formattedDate } ?: listOf()
+        this.todoAdapter.todoList = todosFilteredByDate
+        this.todoAdapter.notifyDataSetChanged()
     }
 
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.todos_menu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.reload_data_menu_action_button) {
+            this.calendarFragmentView.setUpCalendarView()
+            this.todoAdapter.todoList = dataLayer.getTodoViewModel().todos.value ?: listOf()
+            this.todoAdapter.notifyDataSetChanged()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
 
     private fun setUpActivityViews(data: List<TodoModel>) {
@@ -84,7 +103,9 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
     private fun observeTodoListData() {
         this.dataLayer.getTodoViewModel().todos.observe(this) { todoList ->
-            this.setUpActivityViews(todoList)
+            // Filter todos for today
+            val todayTodos = todoList
+            this.setUpActivityViews(todayTodos)
         }
     }
 
