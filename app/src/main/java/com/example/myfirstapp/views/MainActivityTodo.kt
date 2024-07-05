@@ -37,7 +37,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
         setContentView(R.layout.activity_main)
 
-        this.title = "Todos"
+        this.title = getString(R.string.main_activity_title)
         // Init calendar fragment
         this.calendarFragmentView = supportFragmentManager.findFragmentByTag("CALENDAR_VIEW") as CalendarFragmentView
         this.calendarFragmentView.setUpCalendarHandler(this)
