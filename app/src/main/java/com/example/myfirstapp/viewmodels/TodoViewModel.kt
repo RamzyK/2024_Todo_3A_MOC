@@ -25,7 +25,7 @@ class TodoViewModel(private val todoRepository: TodosRepository) {
             if (localTodoData.isEmpty()) {
                 this@TodoViewModel.fetchDataFromApi()
             } else {
-                this@TodoViewModel.todos.value = ArrayList(localTodoData)
+                this@TodoViewModel.todos.postValue(ArrayList(localTodoData))
             }
         }
     }
