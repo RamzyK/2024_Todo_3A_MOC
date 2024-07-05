@@ -54,11 +54,14 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
     // Calendar
     override fun getSelectedDate(day: Int, month: Int, year: Int) {
-        val formattedDate = "$year-$month-$day"
-        Log.d("Selected date", formattedDate)
-        val todosFilteredByDate = dataLayer.getTodoViewModel().todos.value?.filter { it.date == formattedDate } ?: listOf()
-        this.todoAdapter.todoList = todosFilteredByDate
-        this.todoAdapter.notifyDataSetChanged()
+        val todos = this.dataLayer.getTodoViewModel().todos.value ?: listOf()
+        if (todos.isNotEmpty()) {
+            val formattedDate = "$year-$month-$day"
+            Log.d("Selected date", formattedDate)
+            val todosFilteredByDate = dataLayer.getTodoViewModel().todos.value?.filter { it.date == formattedDate } ?: listOf()
+            this.todoAdapter.todoList = todosFilteredByDate
+            this.todoAdapter.notifyDataSetChanged()
+        }
     }
 
 
