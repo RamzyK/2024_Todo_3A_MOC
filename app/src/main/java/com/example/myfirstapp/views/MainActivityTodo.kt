@@ -14,6 +14,9 @@ import com.example.myfirstapp.model.TodoModel
 import com.example.myfirstapp.data.DataLayerSingleton
 import com.example.myfirstapp.data.RoomDbHandler
 import com.example.myfirstapp.views.todo_recycler_view.TodoListAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateHandler {
@@ -22,8 +25,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
     private lateinit var todoListRecyclerView: RecyclerView
 
     // Data
-    private val dataLayer = DataLayerSingleton
-    private lateinit var todoDb: RoomDatabase
+    private lateinit var dataLayer: DataLayerSingleton
     private lateinit var todoAdapter: TodoListAdapter
 
     private lateinit var calendarFragmentView: CalendarFragmentView
@@ -32,10 +34,15 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dataLayer = DataLayerSingleton
+
+        dataLayer.getRoomDb(this)
+        dataLayer.createRetrofitClient()
+        dataLayer.createTodoService()
+        dataLayer.initViewModel()
+
 
         setContentView(R.layout.activity_main)
-
-        todoDb = RoomDbHandler.getRoomDb(this)
         this.title = getString(R.string.main_activity_title)
 
         // Init calendar fragment
@@ -44,7 +51,9 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
         if (!this.dataLayer.getTodoViewModel().todoListLoadedOnce) {
             this.observeTodoListData()
-            this.fetchTodoList()
+            CoroutineScope(Dispatchers.IO).launch {
+                this@MainActivityTodo.fetchTodoList()
+            }
         } else {
             val todoModels = this.dataLayer.getTodoViewModel().todos.value?.toList()
             this.setUpActivityViews(todoModels ?: listOf())
@@ -97,7 +106,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
 
     // Data fetch and observing
-    private fun fetchTodoList() {
+    private suspend fun fetchTodoList() {
         // viewModel.getTodo()
         this.dataLayer.getTodoViewModel().fetchTodoFromRepo()
         this.dataLayer.getTodoViewModel().todoListLoadedOnce = true

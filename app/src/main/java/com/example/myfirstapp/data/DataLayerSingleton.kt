@@ -1,5 +1,9 @@
 package com.example.myfirstapp.data
 
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.example.myfirstapp.db.TodosDataBase
 import com.example.myfirstapp.network.TodoServices
 import com.example.myfirstapp.network.TodosRepository
 import com.example.myfirstapp.viewmodels.TodoViewModel
@@ -12,17 +16,21 @@ object DataLayerSingleton {
     private lateinit var retrofitClient: Retrofit
     private lateinit var todoService: TodoServices
     private lateinit var todoViewModel: TodoViewModel
+    private lateinit var todoDb: TodosDataBase
 
-    init {
-        createRetrofitClient()
-        createTodoService()
-        initViewModel()
-    }
 
     fun getTodoViewModel() = todoViewModel
 
+    fun getRoomDb(context: Context) {
+        todoDb = Room.databaseBuilder(
+            context,
+            TodosDataBase::class.java,
+            "todos-db"
+        ).build()
+    }
+
     // Setup HTTP client + services
-    private fun createRetrofitClient() {
+    fun createRetrofitClient() {
         val gsonConverter =
             GsonConverterFactory.create(
                 GsonBuilder().create()
@@ -33,13 +41,16 @@ object DataLayerSingleton {
             .build()
     }
 
-    private fun createTodoService() {
+    fun createTodoService() {
         todoService = retrofitClient.create(TodoServices::class.java)
     }
 
-    private fun initViewModel() {
+    fun initViewModel() {
         todoViewModel = TodoViewModel(
-            TodosRepository(todoService)
+            TodosRepository(
+                todoService,
+                todoDb
+            )
         )
     }
 }
