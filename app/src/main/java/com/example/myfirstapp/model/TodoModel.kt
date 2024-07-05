@@ -3,7 +3,12 @@ package com.example.myfirstapp.model
 import android.os.Parcel
 import android.os.Parcelable
 
-data class TodoModel(val title: String?, val description: String?, val date: String?, val isChecked: Boolean): Parcelable {
+data class TodoModel(
+    val title: String?,
+    val description: String?,
+    val date: String?,
+    val isChecked: Boolean
+): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+
+    id("kotlin-kapt")
 }
 
 android {
@@ -51,5 +53,12 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.converter.gson)
+
+    // Room DB
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt(libs.room.compiler)
 
 }

@@ -1,22 +1,19 @@
 package com.example.myfirstapp.views
 
 import android.content.Intent
-import android.graphics.ColorSpace.Model
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.RoomDatabase
 import com.example.myfirstapp.R
 import com.example.myfirstapp.model.TodoModel
-import com.example.myfirstapp.utils.DataLayerSingleton
+import com.example.myfirstapp.data.DataLayerSingleton
+import com.example.myfirstapp.data.RoomDbHandler
 import com.example.myfirstapp.views.todo_recycler_view.TodoListAdapter
-import okhttp3.internal.notifyAll
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 
 class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateHandler {
@@ -26,6 +23,7 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
     // Data
     private val dataLayer = DataLayerSingleton
+    private lateinit var todoDb: RoomDatabase
     private lateinit var todoAdapter: TodoListAdapter
 
     private lateinit var calendarFragmentView: CalendarFragmentView
@@ -37,7 +35,9 @@ class MainActivityTodo: AppCompatActivity(), TodoOnClickLListener, CalendarDateH
 
         setContentView(R.layout.activity_main)
 
+        todoDb = RoomDbHandler.getRoomDb(this)
         this.title = getString(R.string.main_activity_title)
+
         // Init calendar fragment
         this.calendarFragmentView = supportFragmentManager.findFragmentByTag("CALENDAR_VIEW") as CalendarFragmentView
         this.calendarFragmentView.setUpCalendarHandler(this)

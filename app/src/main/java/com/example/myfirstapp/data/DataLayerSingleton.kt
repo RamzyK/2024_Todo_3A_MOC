@@ -1,4 +1,4 @@
-package com.example.myfirstapp.utils
+package com.example.myfirstapp.data
 
 import com.example.myfirstapp.network.TodoServices
 import com.example.myfirstapp.network.TodosRepository
@@ -19,7 +19,7 @@ object DataLayerSingleton {
         initViewModel()
     }
 
-    fun getTodoViewModel() = this.todoViewModel
+    fun getTodoViewModel() = todoViewModel
 
     // Setup HTTP client + services
     private fun createRetrofitClient() {
@@ -27,19 +27,19 @@ object DataLayerSingleton {
             GsonConverterFactory.create(
                 GsonBuilder().create()
             )
-        this.retrofitClient = Retrofit.Builder()
+        retrofitClient = Retrofit.Builder()
             .baseUrl("https://my-json-server.typicode.com/")
             .addConverterFactory(gsonConverter)
             .build()
     }
 
     private fun createTodoService() {
-        this.todoService = this.retrofitClient.create(TodoServices::class.java)
+        todoService = retrofitClient.create(TodoServices::class.java)
     }
 
     private fun initViewModel() {
-        this.todoViewModel = TodoViewModel(
-            TodosRepository(this.todoService)
+        todoViewModel = TodoViewModel(
+            TodosRepository(todoService)
         )
     }
 }
